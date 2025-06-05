@@ -41,3 +41,16 @@ slo_cities2 = slo_cities |>
 qtm(slo_elev) +
 qtm(slo_cities2, fill = "elev")
 
+slo_tavg = read_stars("data/slovenia/slo_tavg.tif")
+qtm(slo_tavg)
+
+slo_tavg_splitted = split(slo_tavg)
+
+qtm(slo_tavg_splitted)
+
+tm_shape(slo_tavg_splitted) +
+	tm_raster(col = tm_vars(),
+			  col.free = FALSE)
+
+slo_tmean = st_apply(slo_tavg, c("x", "y"), FUN = mean)
+qtm(slo_tmean)
