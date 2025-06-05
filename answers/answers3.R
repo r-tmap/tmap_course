@@ -34,9 +34,12 @@ qtm(slo_elev_mask)
 slo_cities = st_read("data/slovenia/slo_cities.gpkg")
 
 slo_cities_elev = terra::extract(slo_elev, slo_cities)
-
 slo_cities2 = slo_cities |> 
 	mutate(elev = slo_cities_elev$elevation)
+
+slo_cities_gm = terra::extract(slo_gm, slo_cities)
+slo_cities3 = slo_cities2 |> 
+	mutate(gm = slo_cities_gm$geomorphons)
 
 qtm(slo_elev) +
 qtm(slo_cities2, fill = "elev")
@@ -54,3 +57,50 @@ tm_shape(slo_tavg_splitted) +
 
 slo_tmean = st_apply(slo_tavg, c("x", "y"), FUN = mean)
 qtm(slo_tmean)
+
+
+slo_border = st_read("data/slovenia/slo_border.gpkg")
+
+range(slo_elev)
+
+c4a_gui()
+
+tm_shape(slo_elev) +
+	tm_raster(col.scale = tm_scale_continuous(values = "matplotlib.terrain", values.range = c(0.3, 1))) +
+tm_shape(slo_border) + 
+	tm_borders(lwd = 1.5) +
+tm_shape(slo_cities) +
+	tm_dots() +
+	tm_labels("name") +
+tm_basemap("Esri.WorldImagery")
+
+tmap_mode("view")
+
+tm_shape(slo_gm) + 
+	tm_raster()
+
+
+tm_shape(slo_gm) + 
+	tm_raster(col.scale = tm_scale_categorical(values = "cols4all.friendly13"))
+
+c4a_gui()
+
+slo_cities3
+
+tm_shape(slo_cities3) +
+	tm_bubbles(size = "population", 
+			   fill = "gm",
+			   size.scale = tm_scale_continuous(values.scale = 3))
+
+tmap_mode("plot")
+tm_shape(slo_tavg) +
+	tm_raster(col.scale = tm_scale_intervals(values = "tol.sunset", midpoint = NA))
+
+tm_shape(slo_tavg) +
+	tm_raster(col.scale = tm_scale_intervals(values = "tol.sunset", midpoint = 0, breaks = c(-15, -5, 5, 15, 25)))
+
+
+tm_shape(slo_tavg) +
+	tm_raster(col.scale = tm_scale_intervals(values = "tol.sunset", midpoint = NA, style = "kmeans"))
+
+

@@ -95,4 +95,14 @@ tm_shape(l7) +
 tm_shape(l7) +
 	tm_rgb(col = tm_vars(dimvalues = rep(1,3), multivariate = TRUE))
 
+tm_shape(l7) +
+	tm_rgb(col = tm_vars(dimvalues = 1:3, multivariate = TRUE),
+		   col.scale = tm_scale_rgb(stretch = "percent", probs = c(0.02, .98)))
+
+hist(l7[1, , , 1], breaks = 100)
+
+tm_shape(l7) +
+	tm_rgb(col = tm_vars(dimvalues = 1:3, multivariate = TRUE),
+		   col.scale = tm_scale_rgb(stretch = "histogram"))
+
 
