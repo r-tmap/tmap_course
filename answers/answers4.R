@@ -134,3 +134,50 @@ shinyApp(
 	}, options = list(launch.browser=TRUE)
 )
 
+## tmap.mapgl
+library(terra)
+
+tmap_mode("maplibre")
+slo_elev = rast("data/slovenia/slo_elev.tif")
+mx = max(slo_elev[], na.rm = TRUE)
+
+slo_elev_poly = as.polygons(slo_elev / 100, round = TRUE)
+tm_shape(slo_elev_poly) +
+	tm_polygons_3d(
+		height = "elevation", 
+		fill = "elevation", 
+		fill.scale = tm_scale_continuous(values = "hcl.terrain"), 
+		options = opt_tm_polygons_3d(height.max = mx * 3)) +
+	tm_maplibre(pitch = 75)
+
+
+
+tmap_mode("maplibre")
+#> ℹ tmap mode set to "maplibre".
+
+# get vector buildings
+library(osmdata)
+#> Data (c) OpenStreetMap contributors, ODbL 1.0. https://www.openstreetmap.org/copyright
+buildings <- opq(bbox = "Marina Bay, Singapore") |>
+	add_osm_feature(key = "building") |>
+	osmdata_sf()
+
+library(dplyr, warn.conflicts = FALSE)
+# only keep polygons
+buildings_poly <- buildings$osm_polygons |>
+	# convert height and levels from string to numeric
+	mutate(levels = as.numeric(`building:levels`),
+		   height = as.numeric(height)) |>
+	# assume 2 levels if NA
+	mutate(levels = if_else(is.na(levels), 2, levels),
+		   # assume height of 3 m per level if no height
+		   height = if_else(is.na(height), levels * 3, height))
+
+mx = max(buildings_poly$height)
+
+# plot
+tm_shape(buildings_poly) +
+	tm_polygons_3d(height = "height", options = opt_tm_polygons_3d(height.max = mx)) + 
+	tm_maplibre(pitch = 60)
+#> No legends available in mode "maplibre" for map variables
+#> "height"
