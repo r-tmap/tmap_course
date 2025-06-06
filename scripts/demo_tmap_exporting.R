@@ -42,3 +42,10 @@ tm = tm_shape(World) +
 tmap_save(tm, filename = "output/world_srgb.pdf", width = 9, height = 6, colormodel = "srgb")
 tmap_save(tm, filename = "output/world_cmyk.pdf", width = 9, height = 6, colormodel = "cmyk")
 
+tmap_save(tm, filename = "output/press_freedom.html")
+tmap_save(tm, filename = "output/press_freedom2.html", selfcontained = FALSE)
+
+tm2 = tm_shape(World) +
+	tm_polygons(c("press", "economy"))
+
+tmap_save(tm2, filename = "output/press_economy.html")
